@@ -7,32 +7,28 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Environment;
 
-import com.google.gson.Gson;
-
-import org.apache.http.HttpStatus;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import de.fhoeborn.android.comic_api.Comic;
 import de.fhoeborn.android.sampleapplication.content.ComicsDatabase;
 import de.fhoeborn.android.sampleapplication.content.ComicsProvider;
+import retrofit.RestAdapter;
 
 public class CheckForComicsService extends IntentService {
 
+    public static final String ACTION_DOWNLOAD_ENDED = "de.fhoeborn.android.sampleapplication.content.service.action.ACTION_DOWNLOAD_ENDED";
     private static final String ACTION_DOWNLOAD_NEW = "de.fhoeborn.android.sampleapplication.content.service.action.ACTION_DOWNLOAD_NEW";
     private static final String ACTION_DOWNLOAD_NEXT = "de.fhoeborn.android.sampleapplication.content.service.action.ACTION_DOWNLOAD_ONE";
-
-    public static final String ACTION_DOWNLOAD_ENDED = "de.fhoeborn.android.sampleapplication.content.service.action.ACTION_DOWNLOAD_ENDED";
-
     private static final String EXTRA_AMOUNT = "de.fhoeborn.android.sampleapplication.content.service.extra.AMOUNT";
 
+
+    public CheckForComicsService() {
+        super("CheckForComicsService");
+    }
 
     public static void startActionDownloadNew(Context context) {
         Intent intent = new Intent(context, CheckForComicsService.class);
@@ -45,10 +41,6 @@ public class CheckForComicsService extends IntentService {
         intent.setAction(ACTION_DOWNLOAD_NEXT);
         intent.putExtra(EXTRA_AMOUNT, amount);
         context.startService(intent);
-    }
-
-    public CheckForComicsService() {
-        super("CheckForComicsService");
     }
 
     @Override
@@ -69,29 +61,26 @@ public class CheckForComicsService extends IntentService {
     }
 
     private boolean downloadComic(int number) {
-        URL url;
-        try {
-            if (number < 0) {
-                url = new URL("http://xkcd.com/info.0.json");
-            } else {
-                url = new URL("http://xkcd.com/" + number + "/info.0.json");
-            }
-        } catch (MalformedURLException e) {
-            throw new IllegalStateException("The end is to come!");
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://xkcd.com")
+                .build();
+        XKCDService service = restAdapter.create(XKCDService.class);
+
+        Comic comic;
+
+        if (number < 0) {
+            comic = service.getCurrentComic();
+        } else {
+            comic = service.getComic(number);
         }
-        HttpURLConnection conn;
+
         try {
-            conn = (HttpURLConnection) url.openConnection();
-            if (conn.getResponseCode() != HttpStatus.SC_OK) {
-                return false;
-            }
-            Gson gson = new Gson();
-            Comic comic = gson.fromJson(new InputStreamReader(conn.getInputStream()), Comic.class);
             insertComic(comic);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+
 
         return true;
     }
@@ -109,7 +98,9 @@ public class CheckForComicsService extends IntentService {
     private String downloadComic(String downloadUrl, int number) throws IOException {
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root, "xkcd");
-        myDir.mkdirs();
+        if (!myDir.mkdirs()) {
+            throw new IOException("Cannot create directory!");
+        }
         File file = new File(myDir, number + ".jpg");
         if (file.exists()) return file.getAbsolutePath();
 

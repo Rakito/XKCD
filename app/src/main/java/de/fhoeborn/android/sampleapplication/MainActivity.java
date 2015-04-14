@@ -13,7 +13,6 @@ public class MainActivity extends ActionBarActivity implements ListFragment.OnIt
         setContentView(R.layout.activity_main);
     }
 
-
     @Override
     public void onComicSelected(int id) {
         DetailFragment fragment = (DetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);

@@ -26,12 +26,7 @@ import de.fhoeborn.android.sampleapplication.content.ComicsDatabase;
 import de.fhoeborn.android.sampleapplication.content.service.CheckForComicsService;
 
 public class ListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    public interface OnItemSelectedListener {
-        public void onComicSelected(int id);
-    }
-
     private final static int URL_LOADER = 0;
-
     private OnItemSelectedListener listener;
     private ListView list;
 
@@ -74,8 +69,8 @@ public class ListFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getLoaderManager().<Cursor>initLoader(URL_LOADER, null, this);
+        setHasOptionsMenu(true);
+        getLoaderManager().initLoader(URL_LOADER, null, this);
     }
 
     @Override
@@ -104,7 +99,6 @@ public class ListFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onUpdateClicked() {
         CheckForComicsService.startActionDownloadNew(this.getActivity());
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderID, Bundle bundle) {
@@ -145,5 +139,9 @@ public class ListFragment extends Fragment implements LoaderManager.LoaderCallba
             throw new ClassCastException(activity.toString()
                     + " must implement MyListFragment.OnItemSelectedListener");
         }
+    }
+
+    public interface OnItemSelectedListener {
+        void onComicSelected(int id);
     }
 }

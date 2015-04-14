@@ -1,8 +1,9 @@
 package de.fhoeborn.android.sampleapplication.content.service;
 
-import java.util.List;
 
 import de.fhoeborn.android.comic_api.Comic;
+import retrofit.http.GET;
+import retrofit.http.Path;
 
 public interface XKCDService {
     @GET("/info.0.json")
