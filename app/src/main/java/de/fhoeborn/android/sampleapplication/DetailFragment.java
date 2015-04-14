@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
@@ -76,6 +77,7 @@ public class DetailFragment extends OttoFragment implements LoaderManager.Loader
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Drawable image = Drawable.createFromPath(data.getString(data.getColumnIndex(ComicsDatabase.COLUMN_IMG_PATH)));
         comicView.setImageDrawable(image);
+        comicView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         comicView.setAlternativeText(data.getString(data.getColumnIndex(ComicsDatabase.COLUMN_ALT_TEXT)));
         titleView.setText(data.getString(data.getColumnIndex(ComicsDatabase.COLUMN_TITLE)));
     }

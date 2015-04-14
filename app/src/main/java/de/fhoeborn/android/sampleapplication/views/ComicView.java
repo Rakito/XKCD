@@ -3,14 +3,15 @@ package de.fhoeborn.android.sampleapplication.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
+
+import uk.co.senab.photoview.PhotoView;
 
 
 /**
  * This represents a comic strip with a alternative text
  */
-public class ComicView extends ImageView {
+public class ComicView extends PhotoView {
 
     private String alternativeText;
 
