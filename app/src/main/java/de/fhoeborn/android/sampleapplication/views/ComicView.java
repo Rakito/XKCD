@@ -31,12 +31,14 @@ public class ComicView extends PhotoView {
     }
 
     private void init(AttributeSet attrs, int defStyle) {
-        this.setOnClickListener(new OnClickListener() {
+        this.setOnLongClickListener(new OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                 if (alternativeText != null && !alternativeText.isEmpty()) {
                     Toast.makeText(getContext(), alternativeText, Toast.LENGTH_LONG).show();
                 }
+
+                return true;
             }
         });
     }
