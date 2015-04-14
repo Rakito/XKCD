@@ -19,7 +19,9 @@ class ComicCursorAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         ImageView comicView = new ImageView(context);
-        comicView.setScaleType(ImageView.ScaleType.CENTER);
+        comicView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        comicView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return comicView;
     }
 

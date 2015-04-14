@@ -1,6 +1,5 @@
 package de.fhoeborn.android.sampleapplication;
 
-import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -13,11 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.squareup.otto.Subscribe;
+
 import de.fhoeborn.android.sampleapplication.content.ComicsDatabase;
+import de.fhoeborn.android.sampleapplication.model.ComicId;
 import de.fhoeborn.android.sampleapplication.views.ComicView;
 
 
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailFragment extends OttoFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private final static int URL_LOADER = 0;
 
     private int id;
@@ -40,10 +42,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         titleView = (TextView) view.findViewById(R.id.title);
     }
 
-    public void setId(int id) {
+
+    @Subscribe
+    public void onComicSelected(ComicId comic) {
+        onComicSelected(comic.getId());
+    }
+
+    public void onComicSelected(int id) {
         this.id = id;
 
-        getLoaderManager().<Cursor>initLoader(URL_LOADER, null, this);
+        getLoaderManager().restartLoader(URL_LOADER, null, this);
     }
 
     @Override
@@ -76,4 +84,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoaderReset(Loader<Cursor> loader) {
         // nothing to do here
     }
+
+
 }

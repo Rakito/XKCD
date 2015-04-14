@@ -97,11 +97,8 @@ public class CheckForComicsService extends IntentService {
 
     private String downloadComic(String downloadUrl, int number) throws IOException {
         String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root, "xkcd");
-        if (!myDir.mkdirs()) {
-            throw new IOException("Cannot create directory!");
-        }
-        File file = new File(myDir, number + ".jpg");
+        File appFolder = getAppFolder(root);
+        File file = new File(appFolder, number + ".jpg");
         if (file.exists()) return file.getAbsolutePath();
 
         InputStream in = new URL(downloadUrl).openConnection().getInputStream();
@@ -121,18 +118,32 @@ public class CheckForComicsService extends IntentService {
         return file.getAbsolutePath();
     }
 
+    private File getAppFolder(String root) throws IOException {
+        File appFolder = new File(root, "xkcd");
+        if (!appFolder.mkdirs() && !appFolder.exists()) {
+            throw new IOException("Cannot create directory!");
+        }
+        return appFolder;
+    }
+
 
     private void handleActionDownloadNext(int amount) {
-        Cursor cursor;
-        for (int i = 0; i < amount; i++) {
+        Cursor cursor = getContentResolver().query(ComicsProvider.URI_NEWEST_COMIC, null, null, null, null);
+        if (isCursorEmptyOrNull(cursor)) {
+            downloadComic(-1);
+            amount--;
             cursor = getContentResolver().query(ComicsProvider.URI_NEWEST_COMIC, null, null, null, null);
-            if (cursor == null) {
-                downloadComic(-1);
-            } else {
-                downloadComic(cursor.getInt(cursor.getColumnIndex(ComicsDatabase.COLUMN_NUMBER) - i));
-            }
+        }
+
+        int lowestNumber = cursor.getInt(cursor.getColumnIndex(ComicsDatabase.COLUMN_NUMBER));
+        for (int i = 1; i <= amount; i++) {
+            downloadComic(lowestNumber - i);
         }
         Intent broadcast = new Intent(ACTION_DOWNLOAD_ENDED);
         sendBroadcast(broadcast);
+    }
+
+    private boolean isCursorEmptyOrNull(Cursor cursor) {
+        return cursor == null || cursor.getCount() == 0;
     }
 }

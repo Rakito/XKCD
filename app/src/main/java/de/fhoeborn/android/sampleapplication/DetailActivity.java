@@ -13,15 +13,16 @@ public class DetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Bundle extras = getIntent().getExtras();
-        int id = extras.getInt(EXTRA_ID);
+        selectComicInFragment(getIntent().getExtras().getInt(EXTRA_ID));
+    }
 
+    private void selectComicInFragment(int id) {
         Fragment fragment = getFragmentManager().findFragmentById(R.id.frag_detail);
 
         if (!(fragment instanceof DetailFragment)) {
             throw new IllegalStateException("Wrong fragment attached!");
         }
 
-        ((DetailFragment) fragment).setId(id);
+        ((DetailFragment) fragment).onComicSelected(id);
     }
 }

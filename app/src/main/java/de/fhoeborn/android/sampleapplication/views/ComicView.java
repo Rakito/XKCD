@@ -1,10 +1,10 @@
 package de.fhoeborn.android.sampleapplication.views;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 /**
@@ -33,7 +33,9 @@ public class ComicView extends ImageView {
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(ComicView.this.getContext()).setTitle(alternativeText).create().show();
+                if (alternativeText != null && !alternativeText.isEmpty()) {
+                    Toast.makeText(getContext(), alternativeText, Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
